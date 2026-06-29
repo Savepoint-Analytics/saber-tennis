@@ -1,0 +1,7 @@
+source_key,source_name,source_url,license_name,license_url,attribution_required,non_commercial_only,share_alike_required,redistribution_allowed,commercial_use_allowed,status,notes
+jeffsackmann_tennis_atp,Jeff Sackmann Tennis ATP,https://github.com/JeffSackmann/tennis_atp,CC BY-NC-SA 4.0,https://creativecommons.org/licenses/by-nc-sa/4.0/,true,true,true,false,false,target,Canonical ATP match/ranking source.
+jeffsackmann_tennis_wta,Jeff Sackmann Tennis WTA,https://github.com/JeffSackmann/tennis_wta,CC BY-NC-SA 4.0,https://creativecommons.org/licenses/by-nc-sa/4.0/,true,true,true,false,false,target,Canonical WTA match/ranking source.
+jeffsackmann_match_charting,Tennis Abstract Match Charting Project,https://github.com/JeffSackmann/tennis_MatchChartingProject,CC BY-NC-SA 4.0,https://creativecommons.org/licenses/by-nc-sa/4.0/,true,true,true,false,false,target,Shot-by-shot and point-level charting.
+jeffsackmann_slam_pointbypoint,Jeff Sackmann Grand Slam Point-by-Point,https://github.com/JeffSackmann/tennis_slam_pointbypoint,CC BY-NC-SA 4.0,https://creativecommons.org/licenses/by-nc-sa/4.0/,true,true,true,false,false,target,Grand Slam point data with varying schemas.
+jeffsackmann_pointbypoint,Jeff Sackmann Sequential Point-by-Point,https://github.com/JeffSackmann/tennis_pointbypoint,CC BY-NC-SA 4.0,https://creativecommons.org/licenses/by-nc-sa/4.0/,true,true,true,false,false,target,Compact point strings for simulation work.
+

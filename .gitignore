@@ -1,0 +1,32 @@
+.DS_Store
+.env
+.venv/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local/runtime data. Keep only docs and tiny synthetic fixtures in Git.
+data/raw/
+data/bronze/
+data/silver/
+data/gold/
+data/external/
+outputs/**
+!outputs/.gitkeep
+!outputs/charts/.gitkeep
+!outputs/tables/.gitkeep
+!outputs/reports/.gitkeep
+
+# Local warehouse/model artifacts
+mlruns/
+models/
+*.duckdb
+*.db
+*.sqlite
+*.sqlite3
+
