@@ -10,9 +10,10 @@ Phase 1 scaffold is in place:
 
 - Source/license registry seed data.
 - PostgreSQL bootstrap SQL for `tennis.source_license` and `tennis.raw_manifest`.
-- Dry-run source sync CLI for canonical Tennis Abstract / Jeff Sackmann sources.
-- Checksum manifest helpers.
-- Initial score parser, point-string parser, temporal splits, and Elo baseline.
+- Dry-run and local clone/fetch source sync CLI for canonical Tennis Abstract / Jeff Sackmann sources.
+- Checksum manifest helpers that skip repository internals.
+- Bronze CSV-to-Parquet conversion with required metadata columns.
+- Score parser, point-string parser, temporal splits, overall Elo, and independent surface Elo baseline.
 - Documentation for project layout, licensing, pipelines, and leakage-safe backtesting.
 
 ## Quickstart
@@ -63,8 +64,9 @@ See [docs/licenses/third-party-data.md](/Users/alexoswald/Projects/Sabermetrics/
 1. Bootstrap PostgreSQL metadata tables with `scripts/bootstrap_postgres.sql`.
 2. Run `tennis-sabermetrics sync-sources --dry-run` and confirm source metadata.
 3. Sync canonical ATP/WTA repositories into external storage, recording commit SHA and checksums.
-4. Build ATP/WTA bronze Parquet conversion.
-5. Expand score parsing and no-lookahead Elo tests before training models.
+4. Add MinIO copy and raw manifest persistence around synced repositories.
+5. Build ATP/WTA-specific bronze batch commands.
+6. Expand score parsing and no-lookahead Elo tests before training models.
 
 ## Modeling Guardrails
 
@@ -73,4 +75,3 @@ See [docs/licenses/third-party-data.md](/Users/alexoswald/Projects/Sabermetrics/
 - Compare against ranking, Elo, surface Elo, serve/return, and legally isolated odds baselines where available.
 - Report log loss, Brier score, ROC-AUC, calibration, sample size, time period, and missingness caveats.
 - Never frame outputs as gambling advice.
-

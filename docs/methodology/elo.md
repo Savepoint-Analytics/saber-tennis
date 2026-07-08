@@ -4,19 +4,17 @@ Elo is the first transparent baseline for match prediction because it updates fr
 
 ## Initial Implementation
 
-The scaffold includes a simple overall Elo baseline in `src/tennis_sabermetrics/models/elo.py`.
+The scaffold includes simple overall Elo and independent surface Elo baselines in `src/tennis_sabermetrics/models/elo.py`.
 
 Rules:
 
 - Sort matches by match date and stable within-day order.
 - Emit pre-match prediction before updating ratings.
 - Persist split definitions and model parameters with evaluation outputs.
-- Extend to surface Elo only after the overall no-lookahead tests are stable.
+- Keep surface Elo ratings independent by surface until there is enough data to justify blending.
 
 ## Next Extensions
 
-- Surface-specific Elo.
 - Blended overall/surface ratings with shrinkage for sparse surfaces.
 - Tour-specific and level-specific calibration.
 - Time decay or inactivity adjustments.
-

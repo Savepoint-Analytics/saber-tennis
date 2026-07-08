@@ -1,6 +1,6 @@
 # Dataset Registry — Tennis Sabermetrics
 
-_Last updated: 2026-06-29_
+_Last updated: 2026-07-08_
 
 ## Purpose
 
@@ -156,3 +156,4 @@ For any output using Tennis Abstract / Jeff Sackmann data, include attribution s
 |---|---|
 | 2026-06-28 | Initial tennis dataset registry created, including user-provided repos, canonical alternatives, licensing notes, and storage conventions. |
 | 2026-06-29 | Added source license seed files and PostgreSQL bootstrap SQL as the first metadata guardrail before source ingestion. |
+| 2026-07-08 | Added source-sync primitives for canonical Git sources and bronze metadata conversion helpers; no raw data committed. |

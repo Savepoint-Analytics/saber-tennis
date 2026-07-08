@@ -1,6 +1,6 @@
 # Public Data Sources Reference — Tennis Sabermetrics
 
-_Last updated: 2026-06-29_
+_Last updated: 2026-07-08_
 
 ## Purpose
 
@@ -429,3 +429,4 @@ Use in notebooks, dashboards, README files, and public posts:
 |---|---|
 | 2026-06-28 | Initial public data source reference created for tennis project. |
 | 2026-06-29 | Added initial dry-run source acquisition behavior and license metadata seeds to the repository scaffold. |
+| 2026-07-08 | Source acquisition scaffold now supports clone/fetch, commit SHA capture, checksum generation, and bronze metadata conversion hooks. |

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
+
+IGNORED_MANIFEST_DIRS = {".git", "__pycache__", ".ipynb_checkpoints"}
 
 
 @dataclass(frozen=True)
@@ -17,7 +19,7 @@ class RawManifestEntry:
     file_sha256: str
     source_commit_sha: str | None = None
     row_count: int | None = None
-    acquired_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    acquired_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     notes: str | None = None
 
 
@@ -32,5 +34,9 @@ def sha256_file(path: Path, *, chunk_size: int = 1024 * 1024) -> str:
 def build_checksum_manifest(root: Path) -> list[tuple[str, str]]:
     """Return sorted `(relative_path, sha256)` pairs for files under `root`."""
 
-    files = sorted(path for path in root.rglob("*") if path.is_file())
+    files = sorted(
+        path
+        for path in root.rglob("*")
+        if path.is_file() and not IGNORED_MANIFEST_DIRS.intersection(path.relative_to(root).parts)
+    )
     return [(path.relative_to(root).as_posix(), sha256_file(path)) for path in files]

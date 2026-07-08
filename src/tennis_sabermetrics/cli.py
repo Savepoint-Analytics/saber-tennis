@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Sequence
+from pathlib import Path
 
 from tennis_sabermetrics.config import CANONICAL_GIT_SOURCES
-from tennis_sabermetrics.ingest.git_sources import plan_source_sync
+from tennis_sabermetrics.ingest.git_sources import plan_source_sync, sync_git_source
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -19,6 +20,11 @@ def build_parser() -> argparse.ArgumentParser:
     sync = subparsers.add_parser("sync-sources", help="Plan or run source acquisition.")
     sync.add_argument("--source", choices=sorted(CANONICAL_GIT_SOURCES), action="append")
     sync.add_argument("--dry-run", action="store_true", help="Print acquisition plan only.")
+    sync.add_argument(
+        "--external-repos-root",
+        type=Path,
+        help="Override EXTERNAL_REPOS_ROOT for cloned/fetched source repositories.",
+    )
     sync.add_argument(
         "--allow-unverified-source",
         action="store_true",
@@ -40,15 +46,28 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "sync-sources":
         source_keys = tuple(args.source) if args.source else tuple(CANONICAL_GIT_SOURCES)
-        plan = plan_source_sync(
-            source_keys=source_keys,
-            dry_run=args.dry_run,
-            allow_unverified_source=args.allow_unverified_source,
-        )
-        for item in plan:
+        if args.dry_run:
+            plan = plan_source_sync(
+                source_keys=source_keys,
+                dry_run=True,
+                allow_unverified_source=args.allow_unverified_source,
+            )
+            for item in plan:
+                print(
+                    f"{item.action}\t{item.source.source_key}\t{item.source.source_url}\t"
+                    f"license={item.source.license_name}"
+                )
+            return 0
+
+        for source_key in source_keys:
+            result = sync_git_source(
+                source_key,
+                external_repos_root=args.external_repos_root,
+                allow_unverified_source=args.allow_unverified_source,
+            )
             print(
-                f"{item.action}\t{item.source.source_key}\t{item.source.source_url}\t"
-                f"license={item.source.license_name}"
+                f"{result.action}\t{result.source.source_key}\t{result.repo_path}\t"
+                f"commit={result.commit_sha}\tchecksums={result.checksum_count}"
             )
         return 0
 
@@ -58,4 +77,3 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

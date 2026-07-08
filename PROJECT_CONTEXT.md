@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — Sports Sabermetrics — Tennis Empirical Analysis
 
-_Last updated: 2026-06-29_
+_Last updated: 2026-07-08_
 
 ## Purpose
 
@@ -362,6 +362,7 @@ tennis-sabermetrics/
 | 2026-06-28 | Licensing model defined | Added non-commercial data guardrails and commercial-use pathway. |
 | 2026-06-28 | Storage recommendation defined | Recommended Savepoint-Lab MinIO + PostgreSQL + DuckDB + Prefect + dbt. |
 | 2026-06-29 | Initial repo scaffold created | Added Python package layout, README, docs, source-license seeds, PostgreSQL bootstrap SQL, dry-run source sync CLI, checksum helpers, score/point parsers, temporal split, no-lookahead Elo baseline, and initial tests. |
+| 2026-07-08 | Phase 1 build-out continued | Synced local Python tooling with `uv`, added clone/fetch source-sync primitives, checksum skipping for `.git`, bronze CSV-to-Parquet metadata helper, expanded score parsing, independent surface Elo, and 20 passing tests. |
 
 ---
 
@@ -394,12 +395,12 @@ tennis-sabermetrics/
 
 ## Current Priorities
 
-1. Install/sync local Python tooling with `uv` and run the full `ruff` / `pytest` suite.
-2. Bootstrap `tennis.source_license` and `tennis.raw_manifest` with `scripts/bootstrap_postgres.sql`.
-3. Extend the source sync script from dry-run planning to clone/fetch, commit SHA capture, checksum generation, and MinIO copy.
-4. Build ATP/WTA match and ranking bronze Parquet conversion with metadata columns.
-5. Expand score parser coverage for retirements, walkovers, super-tiebreaks, Davis Cup/team events, and old scoring conventions.
-6. Implement surface Elo with strict as-of-date evaluation.
+1. Bootstrap `tennis.source_license` and `tennis.raw_manifest` with `scripts/bootstrap_postgres.sql` on Savepoint-Lab.
+2. Add MinIO copy and PostgreSQL raw manifest persistence around the clone/fetch source-sync flow.
+3. Build ATP/WTA-specific bronze batch commands for match and ranking CSVs.
+4. Add dbt staging models for source license, raw manifest, players, tournaments, matches, rankings, and match stats.
+5. Expand score parser coverage for Davis Cup/team events and old scoring conventions.
+6. Extend surface Elo with blended shrinkage for sparse surfaces.
 7. Produce a first public notebook: “Why Elo and serve/return decomposition beat raw rankings for tennis analysis.”
 
 ---

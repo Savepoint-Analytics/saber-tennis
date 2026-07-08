@@ -6,7 +6,6 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-
 SOURCE_KEYS = (
     "jeffsackmann_tennis_atp",
     "jeffsackmann_tennis_wta",
@@ -30,7 +29,7 @@ class ProjectPaths:
     external_repos_root: Path
 
     @classmethod
-    def from_env(cls) -> "ProjectPaths":
+    def from_env(cls) -> ProjectPaths:
         return cls(
             raw_data_root=Path(os.getenv("RAW_DATA_ROOT", "/mnt/data/tennis/raw")),
             external_repos_root=Path(

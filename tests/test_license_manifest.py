@@ -1,5 +1,5 @@
 from tennis_sabermetrics.config import CANONICAL_GIT_SOURCES, SOURCE_KEYS
-from tennis_sabermetrics.ingest.git_sources import plan_source_sync
+from tennis_sabermetrics.ingest.git_sources import plan_source_sync, repo_dir_name
 
 
 def test_required_source_keys_are_declared() -> None:
@@ -21,4 +21,10 @@ def test_dry_run_sync_plan_uses_canonical_sources() -> None:
     assert len(plan) == 1
     assert plan[0].action == "plan-clone-or-fetch"
     assert plan[0].source.source_url == "https://github.com/JeffSackmann/tennis_atp"
+
+
+def test_repo_dir_name_uses_url_stem() -> None:
+    source = CANONICAL_GIT_SOURCES["jeffsackmann_tennis_atp"]
+
+    assert repo_dir_name(source) == "tennis_atp"
 
