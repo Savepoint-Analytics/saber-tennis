@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dash>=2.18",
+    "dbt-postgres>=1.11.0",
     "duckdb>=1.1",
     "lightgbm>=4.5",
     "mlflow>=2.17",

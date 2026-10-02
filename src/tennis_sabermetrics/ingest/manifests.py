@@ -6,6 +6,7 @@ import hashlib
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime
 from pathlib import Path
+from typing import Self
 
 IGNORED_MANIFEST_DIRS = {".git", "__pycache__", ".ipynb_checkpoints"}
 
@@ -21,6 +22,28 @@ class RawManifestEntry:
     row_count: int | None = None
     acquired_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     notes: str | None = None
+
+    @classmethod
+    def from_snapshot_copy(
+        cls,
+        *,
+        source_key: str,
+        snapshot_date: date,
+        source_file_path: str,
+        storage_uri: str,
+        file_sha256: str,
+        source_commit_sha: str | None,
+        notes: str | None = None,
+    ) -> Self:
+        return cls(
+            source_key=source_key,
+            snapshot_date=snapshot_date,
+            source_file_path=source_file_path,
+            storage_uri=storage_uri,
+            file_sha256=file_sha256,
+            source_commit_sha=source_commit_sha,
+            notes=notes,
+        )
 
 
 def sha256_file(path: Path, *, chunk_size: int = 1024 * 1024) -> str:

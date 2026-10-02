@@ -13,3 +13,7 @@ def iter_wta_match_csvs(source_root: Path) -> list[Path]:
 
 def iter_wta_ranking_csvs(source_root: Path) -> list[Path]:
     return sorted(source_root.glob("wta_rankings_*.csv"))
+
+
+def iter_wta_player_csvs(source_root: Path) -> list[Path]:
+    return sorted(source_root.glob("wta_players.csv"))

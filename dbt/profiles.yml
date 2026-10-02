@@ -1,0 +1,12 @@
+tennis_sabermetrics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', env_var('SAVEPOINT_PG_HOST', env_var('POSTGRESQL_DB_HOST', 'savepoint-lab.local'))) }}"
+      port: "{{ env_var('POSTGRES_PORT', env_var('SAVEPOINT_PG_PORT', env_var('POSTGRESQL_DB_PORT', '5432'))) | int }}"
+      user: "{{ env_var('POSTGRES_USER', env_var('SAVEPOINT_PG_USER', env_var('POSTGRESQL_DB_UID', 'alex'))) }}"
+      password: "{{ env_var('POSTGRES_PASSWORD', env_var('POSTGRES_PWD', env_var('SAVEPOINT_PG_PWD', env_var('POSTGRESQL_DB_PWD', '')))) }}"
+      dbname: "{{ env_var('POSTGRES_DB', env_var('SAVEPOINT_PG_DB', env_var('POSTGRESQL_DB_NAME', 'sports'))) }}"
+      schema: tennis
+      threads: 4

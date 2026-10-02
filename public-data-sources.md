@@ -1,6 +1,6 @@
 # Public Data Sources Reference — Tennis Sabermetrics
 
-_Last updated: 2026-07-08_
+_Last updated: 2026-08-24_
 
 ## Purpose
 
@@ -235,6 +235,22 @@ Notes:
 
 ## Additional Sources Worth Considering
 
+### Aneeshers Tennis Sackmann Archive
+
+**URL:** `https://github.com/Aneeshers/tennis-sackmann-archive`
+**Hugging Face mirror:** `https://huggingface.co/datasets/Aneeshers/tennis-sackmann-archive`
+**Format:** CSV folders for `atp/`, `wta/`, and `slam_pointbypoint/`.
+**Use for:** Explicit fallback raw acquisition when canonical ATP/WTA GitHub repositories are unavailable.
+**License:** CC BY-NC-SA 4.0, mirroring the original Jeff Sackmann license.
+**Commercial use:** Not without separate permission from the rights holder.
+
+Recommendation:
+
+- Keep this as source key `aneeshers_tennis_sackmann_archive`.
+- Do not rewrite canonical `jeffsackmann_tennis_atp` or `jeffsackmann_tennis_wta` URLs to this mirror.
+- Record mirror commit, original upstream provenance note, snapshot date, checksums, and attribution.
+- Prefer the GitHub mirror for raw file sync. The Hugging Face page reports a dataset viewer/schema parse failure, so do not rely on its generated table preview as a schema contract.
+
 ### Tennis-Data.co.uk
 
 **URL:** `https://www.tennis-data.co.uk/`  
@@ -360,6 +376,51 @@ Recommendation:
 
 ---
 
+### Tennis Data Innovations / ATP Commercial Data
+
+**URL:** `https://www.tennisdata.com/home/`
+**Format:** Commercial licensed feed/platform.
+**Use for:** Future commercial-grade ATP data source and potential sandbox/historical archive path.
+**Public:** No.
+**Commercial use:** Yes only under contract.
+
+Recommendation:
+
+- First-contact route for ATP paid use because TDI manages ATP data commercialisation across betting, media, and performance.
+- Confirm storage, modeling, derived-output, attribution, and customer-display rights in writing.
+
+---
+
+### Sportradar Tennis API
+
+**URL:** `https://developer.sportradar.com/tennis/reference/overview`
+**Format:** Commercial/trial API.
+**Use for:** Technical integration candidate for schedules, scores, rankings, historical results, match statistics, and probabilities where licensed.
+**Public:** No production use without credentials.
+**Commercial use:** Yes only under contract.
+
+Recommendation:
+
+- Evaluate as a production API candidate after confirming ATP/WTA coverage, historical depth, and add-on probability entitlements.
+- Use trial/sandbox access only for integration testing, not final paid analytics.
+
+---
+
+### SportsDataIO Global / Commercial APIs
+
+**URL:** `https://sportsdata.io/developers/apis`
+**Format:** Commercial/trial API.
+**Use for:** Lower-priority commercial data candidate or licensing model reference.
+**Public:** No production use without credentials.
+**Commercial use:** Yes only under contract.
+
+Recommendation:
+
+- Do not assume tennis coverage until sales/legal confirms the exact feed.
+- Useful as a commercial-rights checklist because their public FAQ discusses caching, model building, derived analytics, and display under scoped commercial licenses.
+
+---
+
 ## Data Quality Checklist
 
 Before building analytics on a source, answer:
@@ -430,3 +491,9 @@ Use in notebooks, dashboards, README files, and public posts:
 | 2026-06-28 | Initial public data source reference created for tennis project. |
 | 2026-06-29 | Added initial dry-run source acquisition behavior and license metadata seeds to the repository scaffold. |
 | 2026-07-08 | Source acquisition scaffold now supports clone/fetch, commit SHA capture, checksum generation, and bronze metadata conversion hooks. |
+| 2026-07-15 | Source acquisition scaffold now supports explicit MinIO raw snapshot copy, PostgreSQL raw manifest persistence, and ATP/WTA bronze batch conversion. |
+| 2026-08-04 | PostgreSQL metadata bootstrap was verified; MinIO-backed source acquisition remains pending visible write credentials. |
+| 2026-08-23 | MinIO/PostgreSQL connectivity is verified, but canonical ATP/WTA GitHub endpoints returned 404 from acquisition checks. Forks remain reference-only until license and lineage are reviewed. |
+| 2026-08-24 | Reviewed `Aneeshers/tennis-sackmann-archive` as a CC BY-NC-SA fallback mirror and documented that canonical ATP/WTA source keys must not be silently remapped. |
+| 2026-08-25 | Implemented explicit fallback sync for archive `atp/` and `wta/`, copied raw files to MinIO, wrote PostgreSQL manifest rows, and built ATP/WTA bronze Parquet outside Git. |
+| 2026-08-25 | Loaded fallback ATP/WTA bronze Parquet into PostgreSQL landing tables and verified dbt staging views/tests. |

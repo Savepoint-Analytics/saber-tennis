@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — Sports Sabermetrics — Tennis Empirical Analysis
 
-_Last updated: 2026-07-08_
+_Last updated: 2026-09-28_
 
 ## Purpose
 
@@ -48,7 +48,7 @@ Source-specific acquisition, access, and licensing notes belong in `public-data-
 - [ ] Phase 4: Point/game/set win-probability simulator.
 - [ ] Phase 5: Public dashboard or article series.
 
-**Current focus:** Use the metadata-first scaffold to bootstrap `source_license` / `raw_manifest`, dry-run canonical source sync, then add ATP/WTA bronze conversion without committing raw data.
+**Current focus:** Prepare the first non-commercial match-prediction artifact for careful publication by adding lightweight chart captions, source-specific review notes, and runtime improvements.
 
 ---
 
@@ -104,6 +104,7 @@ The audience includes tennis players, coaches, analysts, technical hiring manage
 |---|---|---|---|---|---|
 | Tennis Abstract ATP match/ranking data | `https://github.com/JeffSackmann/tennis_atp` | CSV | Regular but not guaranteed | Target | Canonical ATP source. Match stats mostly 1991+, stronger from 1997+. CC BY-NC-SA 4.0. |
 | Tennis Abstract WTA match/ranking data | `https://github.com/JeffSackmann/tennis_wta` | CSV | Regular but not guaranteed | Target | Canonical WTA source. CC BY-NC-SA 4.0. |
+| Aneeshers Tennis Sackmann Archive | `https://github.com/Aneeshers/tennis-sackmann-archive` | CSV | Archival mirror | Fallback | Reviewed mirror for ATP/WTA/Slam point-by-point availability gaps. Keep separate source key, original Jeff Sackmann attribution, mirror provenance, CC BY-NC-SA 4.0 constraints, and non-commercial handling. |
 | Tennis Abstract Match Charting Project | `https://github.com/JeffSackmann/tennis_MatchChartingProject` | CSV | Periodic | Target | Shot-by-shot and point-level charted matches. Best public source for tactics. CC BY-NC-SA 4.0. |
 | Grand Slam point-by-point | Prefer canonical `https://github.com/JeffSackmann/tennis_slam_pointbypoint`; user also listed `github.com/halepmania/tennis_slam_pointbypoint` | CSV | After slams, not guaranteed | Target | Slam point data; availability and columns vary by year/tournament. CC BY-NC-SA 4.0 in canonical repo. |
 | Sequential point-by-point | Prefer canonical `https://github.com/JeffSackmann/tennis_pointbypoint`; user listed `https://github.com/ppaulojr/tennis_pointbypoint` | CSV | Historical/static-ish | Target | Encoded point sequences for thousands of matches. Data is messy and incomplete. CC BY-NC-SA 4.0 in canonical repo. |
@@ -166,6 +167,7 @@ Recommended flow:
 ### Data Acquisition Notes
 
 - Prefer canonical Jeff Sackmann repositories over forks unless a fork contains data unavailable upstream and its license/lineage is clear.
+- As of 2026-08-24, `JeffSackmann/tennis_atp` and `JeffSackmann/tennis_wta` returned repository-not-found responses from local Git/curl checks. `Aneeshers/tennis-sackmann-archive` is reviewed as a fallback, not as a silent replacement for canonical source keys.
 - Do not use non-commercial third-party datasets in paid Savepoint Analytics client work without written permission or a separate commercial license.
 - Keep data snapshots reproducible. Never rely only on “latest from GitHub” without recording commit hash and download date.
 - Point-level and shot-level datasets contain missingness that is not random. Availability depends on tournament, court, year, scoring system, and charting coverage.
@@ -363,6 +365,19 @@ tennis-sabermetrics/
 | 2026-06-28 | Storage recommendation defined | Recommended Savepoint-Lab MinIO + PostgreSQL + DuckDB + Prefect + dbt. |
 | 2026-06-29 | Initial repo scaffold created | Added Python package layout, README, docs, source-license seeds, PostgreSQL bootstrap SQL, dry-run source sync CLI, checksum helpers, score/point parsers, temporal split, no-lookahead Elo baseline, and initial tests. |
 | 2026-07-08 | Phase 1 build-out continued | Synced local Python tooling with `uv`, added clone/fetch source-sync primitives, checksum skipping for `.git`, bronze CSV-to-Parquet metadata helper, expanded score parsing, independent surface Elo, and 20 passing tests. |
+| 2026-07-15 | Raw and bronze pipeline guardrails added | Added explicit MinIO raw snapshot copy, PostgreSQL raw manifest writer, ATP/WTA `build-bronze` CLI, raw-manifest documentation, and tests for storage/manifest/bronze behavior. |
+| 2026-08-04 | PostgreSQL bootstrap executed | Added `.env` autoloading and Savepoint env aliases, ran `bootstrap-postgres`, verified 11 `source_license` rows and `tennis.raw_manifest`. MinIO sync is blocked until access key and secret key are visible to the CLI. |
+| 2026-08-23 | MinIO/PostgreSQL verified; canonical ATP/WTA GitHub unavailable | `.env` now exposes MinIO write credentials. MinIO bucket read and PostgreSQL metadata connectivity were verified. ATP/WTA sync was attempted but `github.com/JeffSackmann/tennis_atp` and `github.com/JeffSackmann/tennis_wta` returned 404 via Git/curl. Do not switch to forks without license review. |
+| 2026-08-24 | ATP/WTA fallback reviewed | Confirmed canonical ATP/WTA repositories remain unavailable from local Git/curl checks, verified Match Charting remains accessible, reviewed `Aneeshers/tennis-sackmann-archive` as a CC BY-NC-SA fallback, and added fallback metadata/docs without remapping canonical source keys. |
+| 2026-08-25 | Fallback ATP/WTA raw and bronze pipeline completed | Added explicit archive subdirectory sync, synced `atp/` and `wta/` raw snapshots from archive commit `83733587353df8a41f2fd4f516147d5aa83f5a8d` to MinIO, wrote 302 `raw_manifest` rows, built 299 local bronze Parquet files, and added initial dbt staging models. |
+| 2026-08-25 | Bronze warehouse and dbt staging verified | Loaded bronze Parquet to PostgreSQL landing tables, enriched 299 raw manifest row counts, added `dbt-postgres` and repo-local profile, ran `dbt debug`, built 7 staging views, and passed 7 dbt data tests. |
+| 2026-08-25 | Player-file bronze and silver warehouse completed | Added player-file bronze conversion for ATP/WTA players, stricter bronze schema validation helpers, loaded 137,483 player-file rows to `tennis.bronze_players`, built 5 silver dbt views, and passed 26 dbt data tests. |
+| 2026-09-02 | Gold features and baseline prediction completed | Built `tennis.gold_match_features_asof` for 1,538,049 post-1990 matches with 0 future-feature violations, evaluated ranking/Elo/surface-Elo/logistic baselines, and persisted 8 backtest metric rows. |
+| 2026-09-02 | Feature leakage gates added | Added Python and dbt checks for feature timing, unique oriented match-feature grain, self-match rows, rank/as-of null consistency, and all joined difference features before model evaluation. The gate found and removed 7 invalid self-match gold rows, leaving 1,538,042 current gold feature rows. |
+| 2026-09-03 | Initial prediction diagnostics completed | Added and ran calibration, missingness, and segmented backtest diagnostics; this initial run was superseded by the orientation/calibration rebuild later the same day. |
+| 2026-09-03 | Orientation, calibration, and blended surface Elo completed | Rebuilt gold match features with hash-based player orientation independent of player IDs, switched production surface Elo features to sparse-surface shrinkage toward overall Elo, added validation-fitted Platt calibration, reran leakage checks, persisted 12 backtest rows, 120 calibration rows, 648 missingness rows, and 272 segment rows. |
+| 2026-09-07 | Source composition, article, and walk-forward evaluation completed | Added source-composition diagnostics for high-performing segments, persisted 50 source-composition rows, added 2016-2025 walk-forward evaluation with 80 persisted rows, and drafted the first public non-commercial article plus companion notebook. |
+| 2026-09-09 | Publication hardening completed | Added model-card documentation, held-out isotonic calibration, event/source-level diagnostic flags, publication review docs, refreshed warehouse outputs, and persisted 16 baseline rows, 160 calibration rows, 1,164 segment rows, 159 source-composition rows, and 120 walk-forward rows. |
 
 ---
 
@@ -395,13 +410,65 @@ tennis-sabermetrics/
 
 ## Current Priorities
 
-1. Bootstrap `tennis.source_license` and `tennis.raw_manifest` with `scripts/bootstrap_postgres.sql` on Savepoint-Lab.
-2. Add MinIO copy and PostgreSQL raw manifest persistence around the clone/fetch source-sync flow.
-3. Build ATP/WTA-specific bronze batch commands for match and ranking CSVs.
-4. Add dbt staging models for source license, raw manifest, players, tournaments, matches, rankings, and match stats.
-5. Expand score parser coverage for Davis Cup/team events and old scoring conventions.
-6. Extend surface Elo with blended shrinkage for sparse surfaces.
-7. Produce a first public notebook: “Why Elo and serve/return decomposition beat raw rankings for tennis analysis.”
+1. Run final human editorial review and publish the non-commercial article with the exported SVGs.
+2. Contact TDI/Sportradar/Stats Perform for commercial terms before any paid Savepoint deliverable.
+3. Add a legally reviewed, isolated odds baseline only if source terms allow it.
+4. Promote source-event mapping into a documented warehouse contract if future marts consume it directly.
+5. Add model artifact/version tracking once experiments move beyond transparent baselines.
+
+## Match Prediction And Analytics Feasibility
+
+Assessment date: 2026-08-25.
+
+Descriptive analytics is possible now for non-commercial research and portfolio outputs. The current PostgreSQL silver layer contains:
+
+- `tennis.silver_matches`: 1,762,930 rows, with ATP coverage from 1877-07-09 to 2026-06-01 and WTA coverage from 1967-12-25 to 2026-06-02.
+- `tennis.silver_players`: 137,483 rows from ATP/WTA player files.
+- `tennis.silver_rankings`: 5,574,677 rows, with ATP rankings from 1973-08-27 to 2026-06-08 and WTA rankings from 1984-01-02 to 2026-06-08.
+- `tennis.silver_match_stats`: 3,525,860 player-match stat rows, with serve/break statistic coverage strongest in the modern era.
+
+Match prediction is feasible as the next implementation step, but it should be treated as baseline research until gold feature marts and backtests exist. The data supports no-lookahead Elo, ranking-based, surface-based, and serve/return models. The immediate blocker is not data availability; it is creating strict as-of feature joins and temporal evaluation artifacts so the model cannot use future information.
+
+Update on 2026-09-02: baseline match prediction is implemented for research use. The post-1990 gold feature table has 1,538,042 rows from 1990-01-01 to 2026-06-02, 1,280,284 rows with both player rankings available, 0 rows where `max_feature_asof_date >= match_date`, and 0 self-match rows after leakage gates removed 7 invalid rows.
+
+Update on 2026-09-03: hash-based player orientation, blended surface Elo shrinkage, and validation-fitted Platt calibration are implemented. The current gold feature table has a `player_a_won` rate of 0.499856, which removes the prior side-orientation bias risk while keeping one row per match.
+
+Current 2022-onward test metrics:
+
+| Model | Log loss | Brier | ROC-AUC | Accuracy |
+|---|---:|---:|---:|---:|
+| Ranking log difference | 0.646413 | 0.227228 | 0.671500 | 0.614822 |
+| Overall Elo | 0.594455 | 0.203916 | 0.747738 | 0.682386 |
+| Blended surface Elo | 0.600943 | 0.206915 | 0.740134 | 0.675868 |
+| Logistic baseline | 0.586271 | 0.200775 | 0.755743 | 0.687172 |
+| Ranking log difference Platt | 0.646679 | 0.227515 | 0.671500 | 0.614933 |
+| Overall Elo Platt | 0.594403 | 0.203944 | 0.747738 | 0.682418 |
+| Blended surface Elo Platt | 0.600509 | 0.206690 | 0.740134 | 0.675850 |
+| Logistic baseline Platt | 0.586288 | 0.200792 | 0.755743 | 0.687193 |
+| Ranking log difference isotonic | 0.645282 | 0.227019 | 0.671386 | 0.614849 |
+| Overall Elo isotonic | 0.595021 | 0.203981 | 0.747580 | 0.682042 |
+| Blended surface Elo isotonic | 0.600412 | 0.206687 | 0.739998 | 0.675986 |
+| Logistic baseline isotonic | 0.586358 | 0.200832 | 0.755604 | 0.687144 |
+
+Update on 2026-09-03: diagnostics are implemented and persisted. The largest logistic-baseline test calibration errors are now in the tails: the 0.9314 mean-prediction bin has a 0.9123 observed win rate, and the 0.0684 mean-prediction bin has a 0.0869 observed win rate.
+
+Update on 2026-09-07: source-composition diagnostics and walk-forward backtests are implemented. The top high-performing missing-rank 2020s test segments are 100% from `aneeshers_tennis_sackmann_archive`, so they should be treated as source-composition findings until event/source mix is reviewed. Across 2016-2025 walk-forward windows, the logistic baseline averages 0.586946 log loss, 0.201187 Brier score, 0.754366 ROC-AUC, and 0.685356 accuracy over 550,657 annual test rows.
+
+Update on 2026-09-09: model-card documentation, held-out isotonic calibration, event/source diagnostic flags, and final publication review docs are implemented. Current output counts are 160 calibration rows, 648 missingness rows, 1,164 segment backtest rows, 159 source-composition rows, and 120 walk-forward rows. The gold feature table now carries `tournament_level` and `draw_size` on all 1,538,042 rows. Isotonic calibration is fit on validation rows only and evaluated on held-out test rows only; it improves the ranking-only baseline and the logistic worst-bin calibration error, but does not beat the uncalibrated logistic baseline on test log loss.
+
+Update on 2026-09-09: walk-forward evaluation now uses precomputed arrays plus a narrow PostgreSQL feature loader after SQL leakage gates pass. Full 2016-2025 PostgreSQL-backed refresh time dropped from 141.66 seconds to 74.29 seconds in the local environment. Event-level mapping now uses Sackmann-derived code semantics for ITF numeric prize levels, ATP satellites/ITFs, season finals, team cups, and Olympics; persisted segment rows no longer include `event_level = unknown`. Article/notebook caption notes and the commercial data path are documented.
+
+Update on 2026-09-09: diagnostics now use a narrow PostgreSQL feature loader after SQL leakage gates pass, cache the model-ready diagnostics extract with snapshot metadata under ignored `outputs/cache/`, write `match_event_level_mapping.csv`, persist `tennis.gold_event_level_mapping_diagnostics`, and support `--fail-on-unmapped-events`. The hard-gated refresh completed with 38 mapping rows and 0 unmapped source rows; the uncached run took 113.45 seconds and a cached no-persist repeat took 77.26 seconds. Static article SVGs plus captions were exported to ignored `outputs/charts/article/`.
+
+Update on 2026-09-28: the match-prediction article has been rewritten as a publication-ready non-commercial post with embedded static SVG references, captions, caveats, and reproducibility commands. dbt now includes source-event validation tests for unmapped `gold_match_features_asof` tournament codes and persisted event-mapping diagnostics. Baseline and walk-forward PostgreSQL evaluations now reuse snapshot-aware feature caches under ignored `outputs/cache/`, matching the diagnostics cache pattern while preserving SQL leakage gates. Verified cache-populating no-persist runtimes were 307.73 seconds for baseline evaluation and 85.30 seconds for walk-forward evaluation.
+
+Important caveats:
+
+- Current source data is CC BY-NC-SA and should not be used for paid deliverables without permission or a commercial license.
+- Silver match views exclude rows without parsed match date, winner ID, or loser ID; doubles files are preserved in bronze but are outside the current singles schema contract.
+- Player identity normalization is source-ID based and still needs cross-source deduplication before combining additional datasets.
+- Betting odds are not loaded and should remain isolated until terms are verified.
+- Public outputs need attribution, snapshot date, sample size, time period, tours, surface filters, missingness caveats, and non-commercial caveats.
 
 ---
 

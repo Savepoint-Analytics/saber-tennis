@@ -7,6 +7,7 @@
 .pytest_cache/
 __pycache__/
 *.py[cod]
+.local/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -26,6 +27,9 @@ outputs/**
 # Local warehouse/model artifacts
 mlruns/
 models/
+dbt/logs/
+dbt/target/
+dbt/.user.yml
 *.duckdb
 *.db
 *.sqlite

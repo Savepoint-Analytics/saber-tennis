@@ -1,6 +1,6 @@
 # Dataset Registry — Tennis Sabermetrics
 
-_Last updated: 2026-07-08_
+_Last updated: 2026-08-24_
 
 ## Purpose
 
@@ -43,6 +43,12 @@ Use it to:
 | Tennis visualization examples | `https://github.com/JeffSackmann/tennis_viz` | Python/Altair/data snippets | Git reference only; do not vendor unless license clarified | — | Static | Reference | Unclear for code; underlying data often CC BY-NC-SA | Treat as no commercial use | Use for ideas, not copied code. |
 | Tennis Abstract Elo pages | `https://tennisabstract.com/reports/atp_elo_ratings.html`, `https://tennisabstract.com/reports/wta_elo_ratings.html` | HTML tables | MinIO raw HTML + PostgreSQL `elo_ratings_reference` | — | Weekly-ish | Pending | Treat as Tennis Abstract terms / attribution required | No commercial use unless permission | Benchmark/reference, not primary model source. |
 
+### Reviewed Fallback Sources
+
+| Dataset | Source | Format | Intended Location | Last Updated Locally | Update Freq | Status | License | Commercial Use | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| ATP/WTA/Slam point-by-point archive mirror | `https://github.com/Aneeshers/tennis-sackmann-archive` | CSV | MinIO raw fallback snapshots only, with mirror commit and original provenance notes | — | Archival mirror | Fallback | CC BY-NC-SA 4.0 | No, unless permission | Reviewed because canonical ATP/WTA endpoints returned 404 on 2026-08-24. Do not overwrite canonical source keys; use `aneeshers_tennis_sackmann_archive` if explicitly ingesting from the mirror. |
+
 ### User-Listed Forks / Alternate URLs
 
 | Dataset / repo | User-listed source | Preferred handling | Status | License / risk notes |
@@ -64,6 +70,9 @@ Use it to:
 | TML-Database | `https://github.com/Tennismylife/TML-Database` | CSV/DB | Isolated private evaluation only | — | Live updated | Optional | Non-commercial unless permitted | No, unless permission | May fill recent ATP gaps; verify lineage and terms. |
 | ATP World Tour scrape scripts | `https://github.com/serve-and-volley/atp-world-tour-tennis-data` | Python/R/SQL/CSV | Reference only | — | Static as of 2023 | Reference | CC BY 4.0 for repo | Maybe, but website ToS must be checked | Scrapers may break and official site terms matter. |
 | Stats Perform WTA official feed | `https://www.statsperform.com/wta/` | Licensed feed/API | Not stored until licensed | — | Live | Not acquired | Commercial contract | Yes if licensed | Potential paid data source, not public. |
+| Tennis Data Innovations / ATP commercial data | `https://www.tennisdata.com/home/` | Licensed feed/platform | Not stored until licensed | — | Live + historical platform | Not acquired | Commercial contract | Yes if licensed | First ATP paid-use path to investigate because TDI manages ATP data commercialisation. |
+| Sportradar Tennis API v3 | `https://developer.sportradar.com/tennis/reference/overview` | Licensed API | Not stored until licensed | — | Live + historical API | Not acquired | Commercial contract | Yes if licensed | Candidate integration API; confirm ATP/WTA coverage, historical depth, storage rights, and probabilities entitlements. |
+| SportsDataIO Global / commercial APIs | `https://sportsdata.io/developers/apis` | Licensed API | Not stored until licensed | — | Varies by feed | Not acquired | Commercial contract | Yes if licensed | Lower-priority candidate; verify tennis coverage and exact feed rights before use. |
 
 ### Methodology / Code References
 
@@ -96,6 +105,7 @@ create table if not exists tennis.source_license (
     share_alike_required boolean not null default false,
     redistribution_allowed boolean,
     commercial_use_allowed boolean,
+    status text not null default 'pending',
     notes text,
     verified_at timestamptz not null default now()
 );
@@ -134,6 +144,10 @@ create table if not exists tennis.raw_manifest (
 7. `JeffSackmann/tennis_misc` as algorithm reference only
 8. `JeffSackmann/tennis_viz` as visualization reference only
 
+### Fallback
+
+Use `Aneeshers/tennis-sackmann-archive` only if canonical ATP/WTA access remains unavailable. Preserve the fallback source key, mirror commit, original upstream provenance notes, snapshot date, checksums, and Jeff Sackmann attribution.
+
 ### Optional / Isolated
 
 9. Tennis-Data.co.uk for betting odds benchmark after terms review
@@ -157,3 +171,10 @@ For any output using Tennis Abstract / Jeff Sackmann data, include attribution s
 | 2026-06-28 | Initial tennis dataset registry created, including user-provided repos, canonical alternatives, licensing notes, and storage conventions. |
 | 2026-06-29 | Added source license seed files and PostgreSQL bootstrap SQL as the first metadata guardrail before source ingestion. |
 | 2026-07-08 | Added source-sync primitives for canonical Git sources and bronze metadata conversion helpers; no raw data committed. |
+| 2026-07-15 | Added explicit MinIO raw snapshot copy, PostgreSQL raw manifest persistence hooks, and ATP/WTA bronze batch conversion commands; no raw data committed. |
+| 2026-08-04 | Ran PostgreSQL bootstrap and verified metadata tables. Raw MinIO sync remains pending because MinIO write secrets are not visible to the CLI. |
+| 2026-08-23 | MinIO and PostgreSQL connectivity are verified. ATP/WTA raw sync is blocked because canonical GitHub endpoints returned 404; no raw data committed and `tennis.raw_manifest` remains empty. |
+| 2026-08-24 | Reviewed `Aneeshers/tennis-sackmann-archive` as a CC BY-NC-SA archival fallback for ATP/WTA/Slam point-by-point availability gaps; added fallback source key metadata without remapping canonical sources. |
+| 2026-08-25 | Synced fallback archive `atp/` and `wta/` raw snapshots to MinIO from commit `83733587353df8a41f2fd4f516147d5aa83f5a8d`, wrote 302 manifest rows, and built ATP/WTA bronze Parquet outside Git. |
+| 2026-08-25 | Loaded bronze Parquet into PostgreSQL `tennis.bronze_*` landing tables, enriched raw manifest row counts for CSV files, and verified dbt staging views/tests. |
+| 2026-09-09 | Added source-aware event-level mapping docs and a commercial data path covering TDI/ATP, Sportradar, Stats Perform/WTA, and SportsDataIO review questions. |

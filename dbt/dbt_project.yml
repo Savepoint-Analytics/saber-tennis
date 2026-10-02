@@ -13,12 +13,9 @@ models:
     +schema: tennis
     staging:
       +materialized: view
-    intermediate:
+    silver:
       +materialized: view
-    marts:
-      +materialized: table
 
 seeds:
   tennis_sabermetrics:
     +schema: tennis
-

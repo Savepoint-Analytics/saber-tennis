@@ -25,6 +25,10 @@ Implications:
 
 Sources with unclear terms, such as Tennis-Data.co.uk or TML-Database, must be isolated from default public marts and commercial workflows until their terms are reviewed.
 
+## Reviewed Fallback Mirrors
+
+`Aneeshers/tennis-sackmann-archive` is reviewed as a fallback mirror for ATP/WTA/Slam point-by-point availability gaps. It does not grant additional rights beyond the original Jeff Sackmann license. Treat it as CC BY-NC-SA 4.0, preserve attribution to Jeff Sackmann, record mirror provenance, and keep it out of commercial deliverables unless permission or commercial rights are obtained.
+
 ## Required Metadata
 
 Every source snapshot must record:
@@ -38,3 +42,11 @@ Every source snapshot must record:
 - Storage URI.
 - Attribution and commercial-use flags.
 
+The code path that writes raw manifest rows requires a prior raw snapshot copy, so database metadata points to immutable external storage rather than local working files.
+
+## Publication Reviews
+
+Publication-specific licensing checks live alongside this file:
+
+- [publication-review-match-baseline.md](/Users/alexoswald/Projects/Sabermetrics/Tennis/saber-tennis/docs/licenses/publication-review-match-baseline.md): review for the first match prediction baseline article and notebook.
+- [commercial-data-path.md](/Users/alexoswald/Projects/Sabermetrics/Tennis/saber-tennis/docs/pipelines/commercial-data-path.md): current candidate path for paid/commercial tennis data.
